@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { obtenerPosts } from "../services/postServices";
 import type { Post } from "../types";
+import PostCard from "../components/PostCard";
 
 function Home() {
     const [posts, setPosts] = useState<Post[]>([]);
@@ -46,10 +47,9 @@ function Home() {
                 )}
 
                 {posts.map((post) => (
-                    <div key={post.id}>
-                        <p>{post.description}</p>
-                    </div>
+                    <PostCard key={post.id} post={post} />
                 ))}
+
             </section>
         </div>
     );

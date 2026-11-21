@@ -2,33 +2,29 @@ import React, { useState } from 'react';
 
 interface CommentFormProps {
   postId: number;
-  currentUserId: number;
-  onCommentAdded?: () => void;
+  currentUserId?: number;
+  onCommentAdded: () => void;
 }
 
-export const CommentForm: React.FC<CommentFormProps> = ({
+const CommentForm: React.FC<CommentFormProps> = ({
   postId,
-  currentUserId,
+  currentUserId = 1, // Usuario por defecto si no hay sesión
   onCommentAdded,
 }) => {
-  const [description, setDescription] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [alert, setAlert] = useState<{
-    type: 'success' | 'danger';
-    message: string;
-  } | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const [description, setDescription] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!description.trim()) {
-      setAlert({
-        type: 'danger',
-        message: 'El comentario no puede estar vacío.',
-      });
+    setError(null);
+    setSuccess(null);
+    const cleanText = description.trim();
+    if (!cleanText) {
+      setError('El comentario no puede estar vacío.');
       return;
     }
     setIsSubmitting(true);
-    setAlert(null);
     try {
       const response = await fetch('http://localhost:3000/comments', {
         method: 'POST',
@@ -36,73 +32,64 @@ export const CommentForm: React.FC<CommentFormProps> = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          description: description.trim(),
+          description: cleanText,
           postId,
           userId: currentUserId,
         }),
       });
       if (!response.ok) {
-        throw new Error('No se pudo publicar el comentario.');
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Error al publicar el comentario');
       }
       setDescription('');
-      setAlert({
-        type: 'success',
-        message: '¡Comentario publicado con éxito!',
-      });
-      if (onCommentAdded) {
-        onCommentAdded();
-      }
-    } catch (err) {
-      setAlert({
-        type: 'danger',
-        message:
-          err instanceof Error ? err.message : 'Error al enviar el comentario.',
-      });
+      setSuccess('¡Comentario publicado exitosamente!');
+      onCommentAdded(); // Recarga la lista de comentarios automáticamente
+    } catch (err: any) {
+      setError(err.message || 'Ocurrió un error al enviar el comentario.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
   return (
     <div className="card shadow-sm mb-4">
       <div className="card-body">
-        <h6 className="card-title mb-3">💬 Dejá tu comentario</h6>
-        {alert && (
-          <div
-            className={`alert alert-${alert.type} alert-dismissible fade show small`}
-            role="alert"
-          >
-            {alert.message}
-            <button
-              type="button"
-              className="btn-close"
-              onClick={() => setAlert(null)}
-            ></button>
-          </div>
-        )}
+        <h5 className="card-title mb-3">Dejá tu comentario</h5>
+        {error && <div className="alert alert-danger py-2">{error}</div>}
+        {success && <div className="alert alert-success py-2">{success}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <textarea
               className="form-control"
               rows={3}
-              placeholder="Escribí lo que pensás sobre este posteo..."
+              placeholder="Escribí un comentario respetuoso..."
               value={description}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setDescription(e.target.value)
-              }
+              onChange={(e) => setDescription(e.target.value)}
               disabled={isSubmitting}
-            ></textarea>
+            />
           </div>
-          <div className="d-flex justify-content-end">
-            <button
-              type="submit"
-              className="btn btn-primary btn-sm px-4"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Enviando...' : 'Publicar Comentario'}
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Enviando...
+              </>
+            ) : (
+              'Publicar Comentario'
+            )}
+          </button>
         </form>
       </div>
     </div>
   );
 };
+
+export default CommentForm;

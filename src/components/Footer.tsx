@@ -1,12 +1,15 @@
 import React from 'react';
-export const Footer: React.FC = () => {
+
+const Footer: React.FC = () => {
   return (
-    <footer className="bg-dark text-light py-3 mt-auto border-top border-secondary">
-      <div className="container text-center small text-muted">
-        <p className="mb-0">
-          © {new Date().getFullYear()} UnaHur Anti-Social Net — Trabajo Práctico 2 (CIU)
-        </p>
+    <footer className="bg-dark text-white text-center py-3 mt-auto">
+      <div className="container">
+        <small>
+          &copy; {new Date().getFullYear()} <strong>UnaHur Anti-Social Net</strong> — Proyecto de CIU (Grupo 7)
+        </small>
       </div>
     </footer>
   );
 };
+
+export default Footer;

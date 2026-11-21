@@ -3,88 +3,74 @@ import { Link, NavLink } from 'react-router-dom';
 
 interface NavbarProps {
   currentUser?: {
+    id: number;
     nickName: string;
   } | null;
   onLogout?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
       <div className="container">
-        <Link className="navbar-brand fw-bold text-warning" to="/">
-          🌐 UnaHur Anti-Social Net
+        <Link className="navbar-brand fw-bold text-primary" to="/">
+          Anti-Social Net
         </Link>
         <button
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
-          aria-controls="navbarContent"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div className="collapse navbar-collapse" id="navbarContent">
+        <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  `nav-link ${isActive ? 'active fw-bold text-white' : ''}`
+                  `nav-link ${isActive ? 'active fw-bold' : ''}`
                 }
-                end
               >
                 Inicio
               </NavLink>
             </li>
             {currentUser && (
-              <>
-                <li className="nav-item">
-                  <NavLink
-                    to="/create-post"
-                    className={({ isActive }) =>
-                      `nav-link ${isActive ? 'active fw-bold text-white' : ''}`
-                    }
-                  >
-                    Crear Post
-                  </NavLink>
-                </li>
-                <li className="nav-item">
-                  <NavLink
-                    to="/profile"
-                    className={({ isActive }) =>
-                      `nav-link ${isActive ? 'active fw-bold text-white' : ''}`
-                    }
-                  >
-                    Mi Perfil
-                  </NavLink>
-                </li>
-              </>
+              <li className="nav-item">
+                <NavLink
+                  to="/create-post"
+                  className={({ isActive }) =>
+                    `nav-link ${isActive ? 'active fw-bold' : ''}`
+                  }
+                >
+                  Crear Post
+                </NavLink>
+              </li>
             )}
           </ul>
-          <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-2">
             {currentUser ? (
               <>
-                <span className="text-light small">
-                  👤 Hola, <strong>{currentUser.nickName}</strong>
+                <span className="navbar-text text-white me-2">
+                  Hola, <strong>{currentUser.nickName}</strong>
                 </span>
-                {onLogout && (
-                  <button
-                    onClick={onLogout}
-                    className="btn btn-outline-danger btn-sm"
-                  >
-                    Cerrar Sesión
-                  </button>
-                )}
+                <button
+                  onClick={onLogout}
+                  className="btn btn-outline-danger btn-sm"
+                >
+                  Cerrar Sesión
+                </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="btn btn-outline-light btn-sm">
+                <Link to="/login" className="btn btn-outline-light btn-sm me-2">
                   Iniciar Sesión
                 </Link>
-                <Link to="/register" className="btn btn-warning btn-sm">
+                <Link to="/register" className="btn btn-primary btn-sm">
                   Registrarse
                 </Link>
               </>
@@ -95,3 +81,5 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
     </nav>
   );
 };
+
+export default Navbar;

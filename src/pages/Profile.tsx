@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../context/AuthContext";
 import type { Post } from "../types";
 import { buscarPostPorUsuario } from "../services/postServices";
 import { obtenerComentariosDelPost } from "../services/commentsServices";
 
 function Profile() {
-    const { usuario, cerrarSesion } = useAuth();
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
 
     const [posts, setPosts] = useState<Post[]>([]);
@@ -14,7 +14,7 @@ function Profile() {
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
 
-    const usuarioId = usuario?.id;
+    const usuarioId = user?.id;
 
     useEffect(() => {
         if (usuarioId === undefined) return;
@@ -41,14 +41,14 @@ function Profile() {
     }, [usuarioId]);
 
     function handleLogout() {
-        cerrarSesion();
-        navigate("/");
+        logout();
+        navigate("/login");
     }
 
     return (
         <div className="container py-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h1 className="h3 mb-0">{usuario?.nickName}</h1>
+                <h1 className="h3 mb-0">{user?.nickName}</h1>
                 <button className="btn btn-outline-danger" onClick={handleLogout}>
                     Cerrar sesión
                 </button>

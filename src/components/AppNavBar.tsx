@@ -30,7 +30,7 @@ function AppNavBar() {
               Inicio
             </Nav.Link>
             {user && (
-              <Nav.Link as={Link} to="/posts/new">
+              <Nav.Link as={Link} to="/create-post">
                 Crear Post
               </Nav.Link>
             )}

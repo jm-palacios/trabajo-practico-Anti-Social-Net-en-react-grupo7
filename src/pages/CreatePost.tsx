@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_URL, leerError } from '../services/api';
 import type { Tag } from '../types';
 
 function CreatePost() {
@@ -27,17 +28,19 @@ function CreatePost() {
     // Guarda mensajes de error o confirmación
     const [message, setMessage] = useState('');
 
+    const [creado, setCreado] = useState(false);
+
     // Consulta las etiquetas disponibles cuando se carga el componente
     useEffect(() => {
 
         // Función asincrónica para obtener las etiquetas desde el servidor
         const fetchTags = async () => {
             try {
-                const response = await fetch('http://localhost:3001/tags');
+                const response = await fetch(`${API_URL}/tags`);
 
                 // Verifica si la respuesta del servidor fue correcta
                 if (!response.ok) {
-                    throw new Error('No se pudieron cargar las etiquetas.');
+                    throw new Error(await leerError(response, 'No se pudieron cargar las etiquetas.'));
                 }
 
                 // Convierte la respuesta a JSON y guarda las etiquetas
@@ -102,7 +105,7 @@ function CreatePost() {
             setLoading(true);
 
             // PASO 1: Crear la publicación
-            const response = await fetch('http://localhost:3001/posts', {
+            const response = await fetch(`${API_URL}/posts`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -116,7 +119,7 @@ function CreatePost() {
 
             // Verifica si el servidor respondió correctamente
             if (!response.ok) {
-                throw new Error('No se pudo crear la publicación.');
+                throw new Error(await leerError(response, 'No se pudo crear la publicación.'));
             }
 
             // Obtiene los datos de la publicación creada
@@ -133,7 +136,7 @@ function CreatePost() {
             // PASO 2: Registrar las imágenes de la publicación
             for (const url of validImageUrls) {
                 const imageResponse = await fetch(
-                    'http://localhost:3001/postimages',
+                    `${API_URL}/postimages`,
                     {
                         method: 'POST',
                         headers: {
@@ -149,7 +152,10 @@ function CreatePost() {
                 // Verifica si el servidor registró correctamente la imagen
                 if (!imageResponse.ok) {
                     throw new Error(
-                        'La publicación se creó, pero no se pudo registrar una imagen.'
+                        await leerError(
+                            imageResponse,
+                            'La publicación se creó, pero no se pudo registrar una imágen'
+                        )
                     );
                 }
             }
@@ -159,15 +165,19 @@ function CreatePost() {
                 `Publicación creada correctamente. ID: ${postId}. Imágenes registradas: ${validImageUrls.length}.`
             );
 
-            // Redirige al perfil después de crear la publicación
-            navigate('/profile');
+            setCreado(true);
+
+            // Redirige al perfil después de que el usuario esté confirmado que inicio sesión
+            setTimeout(() => navigate('/profile'), 1500);
 
         } catch (error) {
             // Muestra el error si falla alguna operación
             setMessage(
-                error instanceof Error
-                    ? error.message
-                    : 'Error al conectar con el servidor.'
+                error instanceof TypeError
+                    ? 'No se pudo conectar con el servidor'
+                    : error instanceof Error
+                        ? error.message
+                        : 'Error al conectar con el servidor'
             );
         } finally {
             // Finaliza el estado de carga
@@ -277,7 +287,7 @@ function CreatePost() {
                     <button
                         type="submit"
                         className="btn btn-primary"
-                        disabled={loading}
+                        disabled={loading || creado}
                     >
                         {loading ? 'Publicando...' : 'Publicar'}
                     </button>
@@ -285,11 +295,10 @@ function CreatePost() {
 
                 {/* Mensaje de confirmación o error */}
                 {message && (
-                    <p role="status" className="mt-2">
+                    <div role="status" className={`alert mt-2 ${creado ? 'alert-success' : 'alert-danger'}`}>
                         {message}
-                    </p>
+                    </div>
                 )}
-
             </form>
         </div>
     );

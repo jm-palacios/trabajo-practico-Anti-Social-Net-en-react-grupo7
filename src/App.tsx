@@ -24,6 +24,11 @@ function App() {
           {/*Rutas protegidas*/}
           <Route path='/create-post' element={<ProtectedRoute><CreatePost /> </ProtectedRoute>} />
           <Route path='/profile' element={<ProtectedRoute><Profile /> </ProtectedRoute>} />
+          <Route path='*' element={
+            <div className="container py-5 text-center">
+              <h2>404 - Página no encontrada</h2>
+            </div>
+          }/>
         </Routes>
       </main>
       <Footer/>

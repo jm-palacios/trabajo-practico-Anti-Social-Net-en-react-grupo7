@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import PostCard from "../components/PostCard";
 import { useAuth } from "../context/AuthContext";
 import type { Post } from "../types";
 import { buscarPostPorUsuario } from "../services/postServices";
-import { obtenerComentariosDelPost } from "../services/commentsServices";
 
 function Profile() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
 
     const [posts, setPosts] = useState<Post[]>([]);
-    const [comentarios, setComentarios] = useState<Record<number, number>>({});
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
 
@@ -23,16 +22,8 @@ function Profile() {
             try {
                 const publicaciones = await buscarPostPorUsuario(id);
                 setPosts(publicaciones);
-
-                const conteos = await Promise.all(
-                    publicaciones.map(async (p) => {
-                        const lista = await obtenerComentariosDelPost(p.id);
-                        return [p.id, lista.length] as const;
-                    })
-                );
-                setComentarios(Object.fromEntries(conteos));
             } catch (e) {
-                setError(e instanceof Error ? e.message: "No se pudieron cargar las publicaciones");
+                setError(e instanceof Error ? e.message : "No se pudieron cargar las publicaciones");
             } finally {
                 setCargando(false);
             }
@@ -53,25 +44,25 @@ function Profile() {
                     Cerrar sesión
                 </button>
             </div>
-            {cargando && <p>Cargando publicaciones...</p>}
-            {error && <div className="alert alert-danger">{error}</div>}
-            {!cargando && !error && posts.length === 0 && (
-                <p>Todavía no tenés publicaciones.</p>
-            )}
-
-            {!cargando && !error && posts.map((post) => (
-                <div key={post.id} className="card mb-3">
-                    <div className="card-body">
-                        <p className="card-text">{post.description}</p>
-                        <p className="text-muted small mb-2">
-                            {comentarios[post.id] ?? 0} comentarios
-                        </p>
-                        <Link to={`/post/${post.id}`} className="btn btn-primary btn-sm">
-                            Ver más
-                        </Link>
+            {cargando && (
+                <div className="text-center py-4">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Cargando publicaciones...</span>
                     </div>
                 </div>
-            ))}
+            )}
+            {error && <div className="alert alert-danger">{error}</div>}
+            {!cargando && !error && posts.length === 0 && (
+                <div className="alert alert-info">Todavía no tenés publicaciones.</div>
+            )}
+
+            <div className="row g-4">
+                {!cargando && !error && posts.map((post) => (
+                    <div key={post.id} className="col-12 col-md-6 col-lg-4">
+                        <PostCard post={post} />
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }

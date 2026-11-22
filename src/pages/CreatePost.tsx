@@ -186,10 +186,10 @@ function CreatePost() {
     };
 
     return (
-        <div className="container mt-4">
-            <h2>Crear publicación</h2>
+        <div className="container mt-4 mb-5" style={{ maxWidth: '700px' }}>
+            <h2 className="mb-3">Crear publicación</h2>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="card shadow-sm p-4">
 
                 {/* Campo para escribir la descripción de la publicación */}
                 <div className="mb-3">

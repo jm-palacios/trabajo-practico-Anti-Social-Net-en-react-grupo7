@@ -36,26 +36,42 @@ function PostCard({ post }: PostCardProps) {
         cargarComentarios();
     }, [post.id]);
     return (
-        <div>
-            <p>{post.description}</p>
-            {post.Tags?.map((tag) => (
-                <span key={tag.id}>
-                    #{tag.name}{" "}
-                </span>
-            ))}
-            {imagenes.map((imagen) => (
-                <img
-                    key={imagen.id}
-                    src={imagen.url}
-                    alt="Imagen de la publicación"
-                />
-            ))}
-            <p>Comentarios: {cantidadComentarios}</p>
-            <Link to={`/post/${post.id}`}>
-                Ver más
-            </Link>
+    <div className="card h-100 shadow-sm post-card">
+        {imagenes.length > 0 && (
+            <div className="d-flex">
+                {imagenes.map((imagen) => (
+                    <img
+                        key={imagen.id}
+                        src={imagen.url}
+                        alt="Imagen de la publicación"
+                        className="w-100"
+                        style={{ minWidth: 0, height: "180px", objectFit: "cover" }}
+                    />
+                ))}
+            </div>
+        )}
+        <div className="card-body d-flex flex-column">
+            <p className="card-text">{post.description}</p>
+            {post.Tags && post.Tags.length > 0 && (
+                <div className="d-flex flex-wrap gap-1 mb-3">
+                    {post.Tags.map((tag) => (
+                        <span key={tag.id} className="badge bg-secondary">
+                            #{tag.name}
+                        </span>
+                    ))}
+                </div>
+            )}
+            <div className="mt-auto d-flex justify-content-between align-items-center">
+                <small className="text-muted">
+                    {cantidadComentarios} comentarios
+                </small>
+                <Link to={`/post/${post.id}`} className="btn btn-primary btn-sm">
+                    Ver más
+                </Link>
+            </div>
         </div>
-    );
+    </div>
+);
 }
 
 export default PostCard;

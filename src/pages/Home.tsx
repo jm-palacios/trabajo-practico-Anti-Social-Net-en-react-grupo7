@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { obtenerPosts } from "../services/postServices";
 import type { Post } from "../types";
@@ -30,66 +29,98 @@ function Home() {
     }, []);
 
     return (
-        <div>
-            <header>
-                <h1>UnaHur Anti-Social Net</h1>
-                <h2>¡Bienvenidos a la red social menos social!</h2>
-                <p>
-                    Un espacio para compartir publicaciones,
-                    descubrir contenido y conocer qué pasa en nuestra comunidad.
+    <>
+        <section className="bg-dark text-white text-center py-5">
+            <div className="container">
+                <h1 className="display-5 fw-bold">UnaHur Anti-Social Net</h1>
+                <p className="lead mb-1">¡Bienvenidos a la red social menos social!</p>
+                <p className="text-white-50 mb-0">
+                    Un espacio para compartir publicaciones, descubrir contenido
+                    y conocer qué pasa en nuestra comunidad.
                 </p>
-            </header>
-            <section>
-                <h2>Sobre Nosotros</h2>
-                <p>
-                    UnaHur Anti-Social Net es una red social pensada para
-                    compartir ideas, experiencias y publicaciones con
-                    la comunidad universitaria.
-                </p>
-                <p> Podés explorar publicaciones, descubrir nuevos temas
-                    y participar dejando comentarios.
-                </p>
-            </section>
-            <section>
-                <h2>¿Sabías que...?</h2>
+            </div>
+        </section>
 
-                <h3>Una red social diferente</h3>
+        <div className="container py-4">
+            <section className="mb-5">
+                <h2 className="h3 mb-3">Sobre nosotros</h2>
                 <p>
-                    Aunque nos llamamos Anti-Social Net,
-                    nos encanta compartir ideas y experiencias.
+                    UnaHur Anti-Social Net es una red social pensada para compartir
+                    ideas, experiencias y publicaciones con la comunidad universitaria.
                 </p>
-
-                <h3>Compartí lo que quieras</h3>
-                <p>
-                    Podés crear publicaciones, agregar imágenes
-                    y organizarlas mediante etiquetas.
-                </p>
-
-                <h3>Participá en la comunidad</h3>
-                <p>
-                    También podés comentar las publicaciones
-                    y descubrir lo que comparten otros usuarios.
+                <p className="mb-0">
+                    Podés explorar publicaciones, descubrir nuevos temas y
+                    participar dejando comentarios.
                 </p>
             </section>
 
+            <section className="mb-5">
+                <h2 className="h3 mb-3">¿Sabías que...?</h2>
+                <div className="row g-3">
+                    <div className="col-12 col-md-4">
+                        <div className="card h-100 shadow-sm">
+                            <div className="card-body">
+                                <h3 className="h5 card-title">Una red social diferente</h3>
+                                <p className="card-text mb-0">
+                                    Aunque nos llamamos Anti-Social Net, nos encanta
+                                    compartir ideas y experiencias.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-12 col-md-4">
+                        <div className="card h-100 shadow-sm">
+                            <div className="card-body">
+                                <h3 className="h5 card-title">Compartí lo que quieras</h3>
+                                <p className="card-text mb-0">
+                                    Podés crear publicaciones, agregar imágenes y
+                                    organizarlas mediante etiquetas.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-12 col-md-4">
+                        <div className="card h-100 shadow-sm">
+                            <div className="card-body">
+                                <h3 className="h5 card-title">Participá en la comunidad</h3>
+                                <p className="card-text mb-0">
+                                    También podés comentar las publicaciones y descubrir
+                                    lo que comparten otros usuarios.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section>
-                <h2>Publicaciones</h2>
+                <h2 className="h3 mb-3">Publicaciones recientes</h2>
 
-                {cargando && <p>Cargando publicaciones...</p>}
-
-                {error && <p>{error}</p>}
-
-                {!cargando && !error && posts.length === 0 && (
-                    <p>Todavía no hay publicaciones.</p>
+                {cargando && (
+                    <div className="text-center py-4">
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="visually-hidden">Cargando publicaciones...</span>
+                        </div>
+                    </div>
                 )}
 
-                {posts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                ))}
+                {error && <div className="alert alert-danger">{error}</div>}
 
+                {!cargando && !error && posts.length === 0 && (
+                    <div className="alert alert-info">Todavía no hay publicaciones.</div>
+                )}
+
+                <div className="row g-4">
+                    {posts.map((post) => (
+                        <div key={post.id} className="col-12 col-md-6 col-lg-4">
+                            <PostCard post={post} />
+                        </div>
+                    ))}
+                </div>
             </section>
-        </div >
-    );
+        </div>
+    </>
+);
 }
 
 export default Home;

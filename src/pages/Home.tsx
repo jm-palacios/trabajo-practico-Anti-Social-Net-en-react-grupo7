@@ -13,7 +13,12 @@ function Home() {
         async function cargarPosts() {
             try {
                 const publicaciones = await obtenerPosts();
-                setPosts(publicaciones);
+                const publicacionesOrdenadas = [...publicaciones].sort(
+                    (a, b) =>
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime()
+                );
+                setPosts(publicacionesOrdenadas);
             } catch {
                 setError("No se pudieron cargar las publicaciones");
             } finally {

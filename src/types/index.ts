@@ -16,6 +16,7 @@ export interface Post {
     User?: User;
     Tags?: Tag[];
     images?: PostImage[];
+    createdAt: string;
 }
 
 export interface CrearPost {

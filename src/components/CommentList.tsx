@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import type { Comment } from '../types';
+import { obtenerComentariosDelPost } from '../services/commentsServices';
 
-interface Author {
-  id: number;
-  nickName: string;
-}
-interface Comment {
-  id: number;
-  description: string;
-  createdAt?: string;
-  author?: Author;
-  user?: Author;
-}
 interface CommentListProps {
   postId: number;
   refreshTrigger: number;
@@ -22,33 +13,24 @@ const CommentList: React.FC<CommentListProps> = ({ postId, refreshTrigger }) => 
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const controller = new AbortController();
-    const fetchComments = async () => {
+    let activo = true;
+    async function cargar() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
-          `http://localhost:3000/comments/post/${postId}`,
-          { signal: controller.signal }
-        );
-        if (!response.ok) {
-          throw new Error('No se pudieron obtener los comentarios.');
-        }
-        const data = await response.json();
-        setComments(data);
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          setError(err.message || 'Error de conexión con el servidor.');
-        }
+        const data = await obtenerComentariosDelPost(postId);
+        if (activo) setComments(data)
+      } catch (err) {
+        if (activo) setError(err instanceof Error ? err.message: 'Error de conexión con el servidor')
       } finally {
-        setLoading(false);
+        if (activo) setLoading(false);
       }
-    };
+    }  
 
-    fetchComments();
-
-    return () => controller.abort(); // Limpieza del efecto
+    cargar();
+    return () => { activo = false };
   }, [postId, refreshTrigger]);
+
   if (loading) {
     return (
       <div className="text-center py-4">
@@ -58,9 +40,11 @@ const CommentList: React.FC<CommentListProps> = ({ postId, refreshTrigger }) => 
       </div>
     );
   }
+
   if (error) {
     return <div className="alert alert-warning py-2">{error}</div>;
   }
+  
   if (comments.length === 0) {
     return (
       <div className="alert alert-info text-center py-3">
@@ -74,7 +58,7 @@ const CommentList: React.FC<CommentListProps> = ({ postId, refreshTrigger }) => 
       <h5 className="fw-bold">Comentarios ({comments.length})</h5>
       {comments.map((comment) => {
         const authorName =
-          comment.author?.nickName || comment.user?.nickName || 'Usuario Anónimo';
+          comment.User?.nickName || 'Usuario Anónimo';
         return (
           <div key={comment.id} className="card shadow-sm">
             <div className="card-body">
@@ -86,7 +70,7 @@ const CommentList: React.FC<CommentListProps> = ({ postId, refreshTrigger }) => 
                   </small>
                 )}
               </div>
-              <p className="card-text mb-0">{comment.description}</p>
+              <p className="card-text mb-0">{comment.content}</p>
             </div>
           </div>
         );

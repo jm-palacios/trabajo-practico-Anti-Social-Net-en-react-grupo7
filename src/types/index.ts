@@ -13,7 +13,7 @@ export interface Post {
     id: number;
     description: string;
     UserId: number;
-    createdAt?: string;
+    createdAt: string;
     User?: User;
     Tags?: Tag[];
 }

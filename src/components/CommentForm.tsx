@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { crearComentario } from '../services/commentsServices';
 
 interface CommentFormProps {
   postId: number;
@@ -8,7 +10,7 @@ interface CommentFormProps {
 
 const CommentForm: React.FC<CommentFormProps> = ({
   postId,
-  currentUserId = 1, // Usuario por defecto si no hay sesión
+  currentUserId, 
   onCommentAdded,
 }) => {
   const [description, setDescription] = useState('');
@@ -17,6 +19,7 @@ const CommentForm: React.FC<CommentFormProps> = ({
   const [success, setSuccess] = useState<string | null>(null);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentUserId) return;
     setError(null);
     setSuccess(null);
     const cleanText = description.trim();
@@ -26,30 +29,24 @@ const CommentForm: React.FC<CommentFormProps> = ({
     }
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://localhost:3000/comments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          description: cleanText,
-          postId,
-          userId: currentUserId,
-        }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || 'Error al publicar el comentario');
-      }
+      await crearComentario({ content: cleanText, postId, userId: currentUserId });
       setDescription('');
       setSuccess('¡Comentario publicado exitosamente!');
       onCommentAdded(); // Recarga la lista de comentarios automáticamente
-    } catch (err: any) {
-      setError(err.message || 'Ocurrió un error al enviar el comentario.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ocurrió un error al enviar el comentario.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (!currentUserId) {
+    return (
+      <div className="alert alert-info">
+        Para comentar tenés que <Link to="/login">iniciar sesión</Link>
+      </div>
+    )
+  }
 
   return (
     <div className="card shadow-sm mb-4">

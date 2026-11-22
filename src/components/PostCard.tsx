@@ -48,7 +48,6 @@ function PostCard({ post }: PostCardProps) {
                     key={imagen.id}
                     src={imagen.url}
                     alt="Imagen de la publicación"
-                    style={{ maxWidth: "300px" }}
                 />
             ))}
             <p>Comentarios: {cantidadComentarios}</p>

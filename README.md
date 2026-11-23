@@ -1,75 +1,51 @@
-# React + TypeScript + Vite
+# UnaHur Anti-Social Net
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend de una red social hecha para el TP de *Construcción de Interfaces de Usuario* (UNAHUR). Se puede registrarse e iniciar sesión, ver el feed de publicaciones, entrar al detalle de cada una y comentar, crear publicaciones con etiquetas e imágenes, y ver el perfil propio.
 
-Currently, two official plugins are available:
+Está hecho con:
+- React 19
+- TypeScript
+- Vite
+- React Router
+- Bootstrap 5 y React-Bootstrap
+- Context API de React (manejo de la sesión) y `localStorage`
+- `fetch` para consumir la API REST de la cátedra
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Cómo correrlo en local
 
-## React Compiler
+**1. Levantar la API de la cátedra** (carpeta `backend-api`):
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install (instala las dependencias, necesita Node)
+node seed.js
+npm start
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Queda corriendo en `http://localhost:3001`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**2. Levantar el frontend** (en la carpeta de nuestro TP):
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+git clone https://github.com/jm-palacios/trabajo-practico-Anti-Social-Net-en-react-grupo7.git
+cd trabajo-practico-Anti-Social-Net-en-react-grupo7
+npm install
+npm run dev
 ```
+
+La app se abre en `http://localhost:5173`.
+
+## URL de la API
+
+`http://localhost:3001` (se configura en `src/services/api.ts`).
+
+## Para probarlo
+
+Al correr `node seed.js` se crean los usuarios `luna` y `sol`. Para entrar se usa el nickName y la contraseña `123456`. También se puede crear un usuario nuevo desde `/register`.
+
+## Integrantes
+
+- Franco Nebuloni
+- Victor Marquina
+- Juan Manuel Palacios
+- Miguel Ignacio Sanchez
+- Mariana Alpern
